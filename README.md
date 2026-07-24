@@ -1,5 +1,7 @@
 # Consuma Writing Tool
 
+https://consuma-writing-tool-g5qcbhf08-smit-boras-projects.vercel.app/
+
 A lightweight writing tool for generating Consuma copy that follows the same rulebook across every channel.
 
 The repository includes both a hosted web application and a standalone prompt that can be used with ChatGPT, Claude, or any other capable LLM.
@@ -16,11 +18,11 @@ The serverless API that securely proxies requests to Anthropic. Your API key is 
 
 `prompt.txt`
 
-The complete prompt used by the application. You can paste this directly into ChatGPT, Claude, or another LLM, then send your writing request as the next message. The prompt follows the same rulebook as the deployed website.
+### The complete prompt used by the application. You can paste this directly into ChatGPT, Claude, or another LLM, then send your writing request as the next message. The prompt follows the same rulebook as the deployed website.
 
 `head.html`
 
-A reference page documenting inconsistencies found across various Consuma platforms.
+### A reference page documenting inconsistencies found across various Consuma platforms.
 
 ## Option 1
 
@@ -34,7 +36,7 @@ Enter the shared access code if one has been provided.
 
 Start generating copy.
 
-Your API key is only used to authenticate requests to Anthropic. It is stored locally in your browser and is never committed to this repository.
+#### Your API key is only used to authenticate requests to Anthropic. It is stored locally in your browser and is never committed to this repository.
 
 ## Option 2
 
