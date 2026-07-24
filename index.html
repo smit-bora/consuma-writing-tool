@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Consuma Style Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F4EE; --card:#FFFFFF; --line:#DEDACE;
+    --ink:#1B2A3D; --ink-soft:#5B6675;
+    --teal:#127C6B; --teal-dim:#E4F1EE;
+    --gold:#B98A2E; --gold-dim:#F6EEDD;
+    --red:#B4432F; --red-dim:#FBEAE6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif; padding:32px 24px 80px;
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif; font-weight:600; margin:0;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:1180px; margin:0 auto;}
+  header{margin-bottom:28px; border-bottom:1px solid var(--line); padding-bottom:20px;}
+  header .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--teal);}
+  header h1{font-size:26px; margin-top:4px;}
+  header p{color:var(--ink-soft); font-size:14px; margin-top:6px; max-width:640px; line-height:1.5;}
+  .grid{display:grid; grid-template-columns:340px 1fr; gap:20px;}
+  @media (max-width:860px){.grid{grid-template-columns:1fr;}}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px;}
+  .card + .card{margin-top:16px;}
+  .rulebook h3{font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin-bottom:10px;}
+  .rule-row{display:flex; gap:10px; padding:8px 0; border-top:1px solid var(--line); font-size:12.5px; line-height:1.5;}
+  .rule-row:first-of-type{border-top:none;}
+  .rule-tag{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--teal); background:var(--teal-dim); border-radius:4px; padding:2px 6px; height:fit-content; white-space:nowrap;}
+  .rule-body b{display:block; color:var(--ink);}
+  .rule-body span{color:var(--ink-soft);}
+  label{font-size:12.5px; font-weight:500; color:var(--ink-soft); display:block; margin-bottom:6px;}
+  select, textarea, input[type=text]{
+    width:100%; font-family:'IBM Plex Sans',sans-serif; font-size:14px; color:var(--ink);
+    background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:10px;
+    margin-bottom:14px;
+  }
+  textarea{resize:vertical; min-height:80px; line-height:1.5;}
+  .tabs{display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap;}
+  .tab{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; padding:7px 12px; border-radius:20px;
+    border:1px solid var(--line); background:var(--paper); cursor:pointer; color:var(--ink-soft);
+  }
+  .tab.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  button.generate{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;
+    background:var(--teal); color:#fff; border:none; border-radius:6px; padding:12px 20px; cursor:pointer;
+  }
+  button.generate:disabled{opacity:.5; cursor:default;}
+  .output{margin-top:18px;}
+  .output-text{
+    white-space:pre-wrap; font-size:14.5px; line-height:1.65; background:var(--paper);
+    border:1px solid var(--line); border-radius:8px; padding:16px; min-height:60px;
+  }
+  .audit{margin-top:14px;}
+  .audit-row{display:flex; gap:8px; align-items:flex-start; font-size:12.5px; padding:6px 0; border-top:1px solid var(--line);}
+  .audit-row:first-child{border-top:none;}
+  .pass{color:var(--teal);} .fail{color:var(--red);}
+  .badge{font-family:'IBM Plex Mono',monospace; font-size:10px; padding:1px 6px; border-radius:4px;}
+  .badge.pass{background:var(--teal-dim);} .badge.fail{background:var(--red-dim);}
+  .status{font-size:12.5px; color:var(--ink-soft); margin-top:10px;}
+  .flag{color:var(--gold); font-family:'IBM Plex Mono',monospace; font-size:10.5px; background:var(--gold-dim); padding:1px 6px; border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Consuma / Internal Tool</div>
+  <h1>Consuma Style Console</h1>
+  <p>Generates on-brand copy for a given channel from a fixed, explicit rulebook. The rules are hardcoded below — the model fills in your brief, it does not decide the standard. Every output is auto-audited against the same rules.</p>
+</header>
+
+<div class="grid">
+
+  <div class="rulebook">
+    <div class="card">
+      <h3>Position (say the job, not the category)</h3>
+      <div class="rule-row"><span class="rule-tag">POSITION</span><div class="rule-body"><span>"Consuma replaces weeks of market research with a report the AI writes from the live internet, in under 30 minutes." This is the anchor sentence. Not "AI layer," not "intelligence layer," not "operating system for X" — those are category claims a competitor can copy-paste. This one is checkable.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">BELIEF</span><div class="rule-body"><span>"By the time traditional research lands, the market's already moved." The one opinion Consuma is allowed to repeat across channels. Everything else should sound like it's in service of this belief, not restating the company description.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">NAME</span><div class="rule-body"><b>Consuma</b><span>Never "Consuma AI Engine," "Consuma.ai" mid-sentence, or "the Consuma platform." Just Consuma.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">TERMS</span><div class="rule-body"><span>Smart Scrapers, Autonomous Agents (first use spells out, then "AA"). No other names for the same components.</span></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Proof over adjective</h3>
+      <div class="rule-row"><span class="rule-tag">RULE</span><div class="rule-body"><span>Any claim about the team, the product, or the ambition needs a checkable anchor attached — a client name, a locked stat, or one concrete, specific detail. An adjective alone is not a claim.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">APPROVED CLIENTS</span><div class="rule-body"><span>Foxtale, Mosaic Wellness, DNA Consult, Empirical Media — the only names cleared to cite as proof.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">FLAGGED</span><div class="rule-body"><span>"high talent density," "zero bureaucracy," "real ownership," "exceptional folks," "world-class," "best-in-class" — every seed-stage careers page says these. Say what the person will actually build instead.</span></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Locked numbers</h3>
+      <div class="rule-row"><span class="rule-tag">STAT</span><div class="rule-body"><b>87% accuracy</b><span>vs. secondary research — always this phrasing.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">STAT</span><div class="rule-body"><b>91% reduction</b><span>in analyst hours.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">STAT</span><div class="rule-body"><b>Under 30 minutes</b><span>never "30 mins," "30 Minutes," or a range.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">STAT</span><div class="rule-body"><b>5B+ datapoints</b><span>never "5M–10B" or restated ranges.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">RULE</span><div class="rule-body"><span>Digits always. Never invent a number not on this list.</span></div></div>
+    </div>
+
+    <div class="card">
+      <h3>The patterns that make copy smell AI-written</h3>
+      <div class="rule-row"><span class="rule-tag">BANNED</span><div class="rule-body"><span>"We are not X. We are not Y. We are Z." — the rule-of-three negation. It's the most recognizable startup-deck pattern there is; using it is what makes copy sound like it wrote itself.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">BANNED</span><div class="rule-body"><span>"isn't just about X, it's Y" / "beyond just X" constructions.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">BANNED</span><div class="rule-body"><span>"operating system for X," "intelligence layer," "unlock," "revolutionize," "game-changing," "unparalleled," "cutting-edge," "seamless."</span></div></div>
+      <div class="rule-row"><span class="rule-tag">BANNED</span><div class="rule-body"><span>Em dashes, and spaced hyphens used as punctuation, banned entirely. Use a period or comma instead. (Compound words like "AI-powered" are fine — the ban is on the dash as a pause, not the hyphen as a word-joiner.)</span></div></div>
+      <div class="rule-row"><span class="rule-tag">BANNED VOCAB</span><div class="rule-body"><span>delve, leverage, robust, landscape, realm, foster, elevate, streamline, empower, holistic, synergy, myriad, plethora, showcase, meticulous, utilize, harness, "in today's fast-paced world," "moreover/furthermore" as a sentence opener — the reflexive LinkedIn-thought-leader vocabulary. Full list lives in the tool's rule object.</span></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Mechanics</h3>
+      <div class="rule-row"><span class="rule-tag">EMOJI</span><div class="rule-body"><span>Decorative emoji (🚀🌐💡✨ used for hype) banned everywhere. Functional emoji-as-icon in a structured doc (📍 location, ✉️ email in a careers page's contact line) is fine, max once per line, never repeated for emphasis.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">CASE</span><div class="rule-body"><span>Sentence case for headlines and subject lines. No Title Case, no ALL CAPS.</span></div></div>
+      <div class="rule-row"><span class="rule-tag">CTA</span><div class="rule-body"><b>"Book a demo"</b> or <b>"Get in touch"</b><span>— only these two, nothing else.</span></div></div>
+    </div>
+  </div>
+
+  <div class="generator">
+    <div class="card">
+      <label>Channel</label>
+      <div class="tabs" id="tabs">
+        <div class="tab active" data-ch="linkedin">LinkedIn post</div>
+        <div class="tab" data-ch="email">Email</div>
+        <div class="tab" data-ch="jobdesc">Job description snippet</div>
+        <div class="tab" data-ch="careers">Careers page narrative</div>
+        <div class="tab" data-ch="website">Website copy block</div>
+      </div>
+
+      <label>Brief — what is this piece about?</label>
+      <textarea id="brief" placeholder="e.g. Announce the new loyalty landscape report we just published, aimed at brand managers."></textarea>
+
+      <label>Optional: which locked stat should it lean on? (leave blank for none)</label>
+      <select id="stat">
+        <option value="">None</option>
+        <option value="87% accuracy vs secondary research">87% accuracy vs secondary research</option>
+        <option value="91% reduction in analyst hours">91% reduction in analyst hours</option>
+        <option value="under 30 minutes turnaround">Under 30 minutes turnaround</option>
+        <option value="trained on 5B+ datapoints">Trained on 5B+ datapoints</option>
+      </select>
+
+      <label>CTA</label>
+      <select id="cta">
+        <option value="Book a demo">Book a demo</option>
+        <option value="Get in touch">Get in touch</option>
+        <option value="none">No CTA needed</option>
+      </select>
+
+      <label>Access code</label>
+      <input type="text" id="accessCode" placeholder="Shared internal code" style="margin-bottom:14px;">
+
+      <button class="generate" id="go">Generate</button>
+      <div class="status" id="status"></div>
+
+      <div class="output" id="outputWrap" style="display:none;">
+        <div class="output-text" id="outputText"></div>
+        <div class="card audit">
+          <h3 style="margin-bottom:8px;">Rule audit (checked in code, not by the model)</h3>
+          <div id="auditRows"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const RULES = {
+  name: "Consuma",
+  position: "Consuma replaces weeks of market research with a report the AI writes from the live internet, in under 30 minutes.",
+  belief: "By the time traditional research lands, the market's already moved.",
+  approvedClients: ["Foxtale","Mosaic Wellness","DNA Consult","Empirical Media"],
+  banned: [
+    "revolutionize","revolutionizing","game-changing","unlock","unparalleled","cutting-edge","supercharge","seamless",
+    "operating system for","intelligence layer","high talent density","zero bureaucracy","real ownership",
+    "exceptional folks","world-class","best-in-class","move the needle","passionate team",
+    "delve","delving","boost","tapestry","elevate","elevating","foster","fostering","leverage","leveraging",
+    "robust","landscape","realm","testament","navigate","navigating","dive into","unpack","unpacking",
+    "underscore","underscores","streamline","streamlining","empower","empowering","holistic","synergy",
+    "paradigm","plethora","myriad","showcase","showcasing","meticulous","meticulously","endeavor",
+    "utilize","utilizing","harness","harnessing","vibrant","in today's fast-paced world","ever-evolving",
+    "moreover","furthermore","in conclusion","in summary","it's important to note","it is worth noting",
+    "when it comes to","in the realm of","at the end of the day","notably","arguably"
+  ],
+  approvedCTAs: ["Book a demo","Get in touch"],
+  channelSpecs: {
+    linkedin: {
+      label: "LinkedIn post",
+      structure: "Hook line (no more than 12 words, no emoji) -> 2-3 short lines of substance, ideally implying the belief without stating it outright -> one locked stat if provided -> single CTA line -> at most 2 hashtags, both from: #ConsumerResearch #MarketIntelligence #ConsumaAI. No emoji anywhere. No exclamation points stacked. 60-120 words total.",
+      needsProof: false
+    },
+    email: {
+      label: "Email",
+      structure: "Format as 'Subject: ...' on the first line (sentence case, under 60 characters, no emoji), a blank line, then a body of 3 short paragraphs max, one CTA as the closing line. No emoji. No exclamation points.",
+      needsProof: false
+    },
+    jobdesc: {
+      label: "Job description snippet",
+      structure: "Two sections: 'About Consuma' (use the position sentence, then one proof-anchored sentence about scale or clients, not adjectives) and 'What you'll do' (4-5 bullet points naming the actual thing being built, active verbs, no fluff adjectives). No emoji, no exclamation points, no CTA.",
+      needsProof: true
+    },
+    careers: {
+      label: "Careers page narrative",
+      structure: "A 'Who we are' block (position sentence + belief, in that order, no rule-of-three negation, one proof anchor) and a 'Why work here' block of 3-4 short lines, each one naming something specific and checkable about working there rather than a generic virtue. If no real specific detail is given in the brief, write the line with an explicit bracketed placeholder like [name a real recent example] rather than inventing a fake specific.",
+      needsProof: true
+    },
+    website: {
+      label: "Website copy block",
+      structure: "One headline (sentence case, under 10 words) and one supporting line (under 25 words) built around the locked stat if provided. No emoji, no filler adjectives, one CTA line at the end.",
+      needsProof: false
+    }
+  }
+};
+
+let activeChannel = "linkedin";
+document.getElementById("tabs").addEventListener("click", (e) => {
+  const t = e.target.closest(".tab");
+  if (!t) return;
+  document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+  t.classList.add("active");
+  activeChannel = t.dataset.ch;
+});
+
+function buildSystemPrompt(channel) {
+  const spec = RULES.channelSpecs[channel];
+  return `You are a copy generator that must follow this rulebook exactly. Do not deviate, soften, or reinterpret any rule, even if the brief implies otherwise.
+
+BRAND NAME: always "${RULES.name}". Never any other variant.
+POSITION (what Consuma actually does — use this, not a category label like "AI layer" or "operating system for X"): "${RULES.position}"
+BELIEF (the one opinion Consuma repeats — imply it, don't always state it outright): "${RULES.belief}"
+PROOF RULE: any claim about the team, the product, or the ambition needs a checkable anchor — a locked stat, or one of these client names: ${RULES.approvedClients.join(", ")}. An adjective alone ("exceptional," "world-class," "high-ownership") is never a claim on its own — either attach a real anchor or cut it.
+${spec.needsProof ? "This channel requires at least one proof anchor (a number or an approved client name) somewhere in the piece." : ""}
+BANNED WORDS AND PHRASES (never use, in any form): ${RULES.banned.join(", ")}
+BANNED SENTENCE PATTERNS: rule-of-three negation ("We are not X. We are not Y. We are Z."); "isn't just about X, it's Y"; "beyond just X."
+DASHES: no em dashes (—) and no spaced hyphens used as punctuation (word - word) anywhere, ever. Use a period or a comma instead. Hyphens are only allowed inside a compound word with no surrounding spaces, e.g. "AI-powered," "seed-stage."
+EMOJI: decorative emoji banned everywhere. A functional emoji-as-icon (like a location pin before an address) is only acceptable in the careers channel, max once per line, never repeated.
+CASE: sentence case for headlines/subject lines only, never Title Case or ALL CAPS.
+APPROVED CTA PHRASES (only these, verbatim, if a CTA is requested): ${RULES.approvedCTAs.join(" / ")}
+NUMBERS: digits only, never spelled out, never invent a statistic that wasn't given to you.
+
+CHANNEL: ${spec.label}
+STRUCTURE FOR THIS CHANNEL: ${spec.structure}
+
+Output only the finished piece of copy. No preamble, no explanation, no markdown formatting, no quotation marks around the whole thing.`;
+}
+
+async function generate() {
+  const brief = document.getElementById("brief").value.trim();
+  const stat = document.getElementById("stat").value;
+  const cta = document.getElementById("cta").value;
+  const statusEl = document.getElementById("status");
+  const goBtn = document.getElementById("go");
+
+  if (!brief) { statusEl.textContent = "Add a brief first."; return; }
+
+  goBtn.disabled = true;
+  statusEl.textContent = "Generating...";
+  document.getElementById("outputWrap").style.display = "none";
+
+  let userMsg = `Brief: ${brief}`;
+  if (stat) userMsg += `\nLocked stat to use: ${stat}`;
+  userMsg += cta === "none" ? `\nDo not include a CTA.` : `\nCTA to use: ${cta}`;
+
+  try {
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-code": document.getElementById("accessCode").value.trim()
+      },
+      body: JSON.stringify({
+        system: buildSystemPrompt(activeChannel),
+        message: userMsg
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Request failed");
+    const text = (data.text || "").trim();
+    if (!text) throw new Error("Empty response");
+
+    document.getElementById("outputText").textContent = text;
+    document.getElementById("outputWrap").style.display = "block";
+    runAudit(text, cta, activeChannel);
+    statusEl.textContent = "Done.";
+  } catch (err) {
+    statusEl.textContent = "Generation failed: " + err.message;
+    console.error(err);
+  } finally {
+    goBtn.disabled = false;
+  }
+}
+
+function runAudit(text, ctaChoice, channel) {
+  const rows = [];
+  const lower = text.toLowerCase();
+
+  const bannedHit = RULES.banned.find(w => lower.includes(w));
+  rows.push({
+    pass: !bannedHit,
+    label: "No banned words / generic startup jargon",
+    detail: bannedHit ? `Found: "${bannedHit}"` : "Clean"
+  });
+
+  const negationCount = (lower.match(/we are not|we're not/g) || []).length;
+  rows.push({
+    pass: negationCount < 2,
+    label: "No rule-of-three negation pattern",
+    detail: negationCount >= 2 ? `"We are not..." used ${negationCount} times — reads as templated` : "Clean"
+  });
+
+  const isJustPattern = /isn'?t just about|beyond just/i.test(text);
+  rows.push({
+    pass: !isJustPattern,
+    label: "No \"isn't just X, it's Y\" construction",
+    detail: isJustPattern ? "Found — swap for a direct statement" : "Clean"
+  });
+
+  const emdashHit = text.includes("—");
+  const spacedHyphenHit = / - /.test(text);
+  rows.push({
+    pass: !emdashHit && !spacedHyphenHit,
+    label: "No dashes used as punctuation",
+    detail: emdashHit ? "Em dash found — replace with a period or comma" : spacedHyphenHit ? "Spaced hyphen found — replace with a period or comma" : "Clean"
+  });
+
+  const emojiRegex = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+  const emojiCount = (text.match(emojiRegex) || []).length;
+  const emojiOk = channel === "careers" ? emojiCount <= 2 : emojiCount === 0;
+  rows.push({
+    pass: emojiOk,
+    label: channel === "careers" ? "Emoji used only as functional icons" : "No emoji",
+    detail: emojiCount === 0 ? "Clean" : `${emojiCount} found`
+  });
+
+  const spec = RULES.channelSpecs[channel];
+  if (spec && spec.needsProof) {
+    const hasNumber = /\d/.test(text);
+    const hasClient = RULES.approvedClients.some(c => text.includes(c));
+    rows.push({
+      pass: hasNumber || hasClient,
+      label: "Has a proof anchor (number or approved client name)",
+      detail: (hasNumber || hasClient) ? "Anchored" : "No specific, checkable detail found — reads as a generic claim"
+    });
+  }
+
+  if (ctaChoice !== "none") {
+    const ctaOk = RULES.approvedCTAs.some(c => text.includes(c));
+    rows.push({
+      pass: ctaOk,
+      label: "CTA matches approved phrasing",
+      detail: ctaOk ? "Matched" : "No approved CTA phrase found verbatim"
+    });
+  }
+
+  const auditEl = document.getElementById("auditRows");
+  auditEl.innerHTML = rows.map(r => `
+    <div class="audit-row">
+      <span class="badge ${r.pass ? 'pass' : 'fail'}">${r.pass ? 'PASS' : 'FLAG'}</span>
+      <div><b style="display:block;">${r.label}</b><span style="color:var(--ink-soft);">${r.detail}</span></div>
+    </div>
+  `).join("");
+}
+
+document.getElementById("go").addEventListener("click", generate);
+</script>
+
+</body>
+</html>
