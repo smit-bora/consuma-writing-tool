@@ -1,59 +1,100 @@
-# Consuma Style Console — deploy to Vercel
+# Consuma Writing Tool
 
-## What's in here
-- `index.html` — the tool's frontend. Static, no build step.
-- `api/generate.js` — a serverless function that holds your Anthropic API key
-  server-side and proxies requests to it. The browser never sees the key.
-- `package.json` — tells Vercel this is a Node project.
+A lightweight writing tool for generating Consuma copy that follows the same rulebook across every channel.
 
-## 1. Get an Anthropic API key
-Go to https://console.anthropic.com, create (or select) an organization, add
-billing, and generate an API key under "API Keys." This is separate from a
-claude.ai subscription — it's pay-as-you-go, billed per token.
+The repository includes both a hosted web application and a standalone prompt that can be used with ChatGPT, Claude, or any other capable LLM.
 
-## 2. Deploy
+## Repository contents
 
-### Option A — Vercel CLI (fastest)
+`index.html`
+
+The frontend application.
+
+`api/generate.js`
+
+The serverless API that securely proxies requests to Anthropic. Your API key is never exposed to the browser.
+
+`prompt.txt`
+
+The complete prompt used by the application. You can paste this directly into ChatGPT, Claude, or another LLM, then send your writing request as the next message. The prompt follows the same rulebook as the deployed website.
+
+`head.html`
+
+A reference page documenting inconsistencies found across various Consuma platforms.
+
+## Option 1
+
+### Use the hosted version
+
+Visit the deployed website.
+
+Enter your Anthropic API key into the API key field.
+
+Enter the shared access code if one has been provided.
+
+Start generating copy.
+
+Your API key is only used to authenticate requests to Anthropic. It is stored locally in your browser and is never committed to this repository.
+
+## Option 2
+
+### Use the prompt directly
+
+Open ChatGPT, Claude, or another LLM.
+
+Copy the contents of `prompt.txt` into a new conversation.
+
+Send it as your first message.
+
+Then send your request in the next message.
+
+Examples include:
+
+* Write a LinkedIn post announcing a new report.
+* Write website copy for the homepage.
+* Write a job description for a Founding Designer.
+* Rewrite this email in the Consuma style.
+* Create careers page copy.
+
+The prompt follows the same writing standards and rulebook used by the hosted application.
+
+## Option 3
+
+### Deploy your own copy
+
+Clone the repository.
+
 ```bash
-npm i -g vercel
-cd consuma-vercel
-vercel login
-vercel
+git clone https://github.com/yourusername/consuma-writing-tool.git
+cd consuma-writing-tool
 ```
-Follow the prompts (link to a new project, accept defaults — no framework,
-no build command needed). This gives you a preview URL immediately.
 
-### Option B — GitHub + Vercel dashboard
-1. Push this folder to a new GitHub repo.
-2. Go to vercel.com → Add New → Project → import the repo.
-3. Framework preset: "Other." No build command, no output directory needed.
-4. Deploy.
+Deploy the project to Vercel using either the CLI or the Vercel dashboard.
 
-## 3. Set environment variables
-In the Vercel project → Settings → Environment Variables, add:
-- `ANTHROPIC_API_KEY` — the key from step 1.
-- `ACCESS_CODE` — any string you choose. This gates the `/api/generate`
-  endpoint so a random visitor with your URL can't spend your API credits.
-  Type the same value into the "Access code" field in the tool's UI when
-  you use it. Leave this variable unset if you genuinely want the tool
-  open to anyone (not recommended once it's live).
+In your Vercel project settings, create the following environment variable.
 
-After adding env vars, redeploy (Vercel → Deployments → ⋯ → Redeploy) so
-the function picks them up.
+```text
+ACCESS_CODE=your_shared_access_code
+```
 
-## 4. Go live
-Vercel gives you a `*.vercel.app` domain automatically. To use your own
-domain, go to Settings → Domains and add it (works with any registrar via
-a CNAME/A record — Vercel walks you through it).
+If you want your deployment to provide a default Anthropic key, you can also add:
+
+```text
+ANTHROPIC_API_KEY=your_anthropic_api_key
+```
+
+This variable is optional because users can enter their own Anthropic API key in the application.
+
+Redeploy the project after adding environment variables.
 
 ## Notes
-- The rulebook (`RULES` object, banned words, locked stats, etc.) lives in
-  `index.html`. Edit it there — no redeploy pipeline needed beyond a normal
-  `vercel --prod` or a new git push.
-- `api/generate.js` is the only place your API key is ever read. Don't add
-  it to `index.html` or any client-side code.
-- Every request still costs real API tokens. The access code stops
-  randoms from finding the URL and burning through your quota, but anyone
-  you share the code with can still generate freely — there's no per-user
-  rate limit here. Add one (e.g. via Vercel's Edge Config or a simple
-  in-memory counter) if that becomes a problem.
+
+The writing rules are defined in `index.html`.
+
+The deployed application and `prompt.txt` follow the same rulebook.
+
+Every request uses the Anthropic API key supplied by the user unless a default server key has been configured.
+
+The Anthropic API key is never hardcoded into the frontend.
+
+The access code protects the API endpoint from unauthorized use.
