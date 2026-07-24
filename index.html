@@ -75,6 +75,15 @@
   <div class="eyebrow">Consuma / Internal Tool</div>
   <h1>Consuma Style Console</h1>
   <p>Generates on-brand copy for a given channel from a fixed, explicit rulebook. The rules are hardcoded below — the model fills in your brief, it does not decide the standard. Every output is auto-audited against the same rules.</p>
+  <p style="margin-top:16px;">
+  <a
+    href="head.html"
+    class="generate"
+    style="display:inline-block;text-decoration:none;"
+  >
+    Inconsistencies
+  </a>
+</p>
 </header>
 
 <div class="grid">
@@ -120,9 +129,7 @@
       <div class="rule-row"><span class="rule-tag">CTA</span><div class="rule-body"><b>"Book a demo"</b> or <b>"Get in touch"</b><span>— only these two, nothing else.</span></div></div>
     </div>
   </div>
-<button onclick="window.location.href='head.html'">
-    Inconsistencies
-</button>
+
   <div class="generator">
     <div class="card">
       <label>Channel</label>
@@ -152,7 +159,14 @@
         <option value="Get in touch">Get in touch</option>
         <option value="none">No CTA needed</option>
       </select>
-
+      <label>Anthropic API key</label>
+<input
+  type="text"
+  id="apiKey"
+  placeholder="sk-ant-..."
+  style="margin-bottom:14px;"
+  oninput="localStorage.setItem('anthropic_api_key', this.value)"
+>
       <label>Access code</label>
       <input type="text" id="accessCode" placeholder="Shared internal code" style="margin-bottom:14px;">
 
@@ -413,7 +427,8 @@ function copyPrompt() {
   const text = document.getElementById("promptBlock").value;
   navigator.clipboard.writeText(text);
 }
-
+document.getElementById("apiKey").value =
+  localStorage.getItem("anthropic_api_key") || "";
 loadPrompt();
 document.getElementById("go").addEventListener("click", generate);
 </script>
