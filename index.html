@@ -166,6 +166,35 @@
           <div id="auditRows"></div>
         </div>
       </div>
+      <hr style="margin:32px 0;border:none;border-top:1px solid var(--line);">
+
+<div class="card">
+  <h3 style="margin-bottom:12px;">Prompt for ChatGPT or Claude</h3>
+
+  <p class="status" style="margin-bottom:12px;">
+    You can also use the standalone prompt directly with any LLM. Copy the prompt below, paste it into ChatGPT, Claude, or another model, then send your writing request as the next message.
+  </p>
+
+  <button
+    type="button"
+    class="generate"
+    style="margin-bottom:12px;"
+    onclick="copyPrompt()"
+  >
+    Copy prompt
+  </button>
+
+  <textarea
+    id="promptBlock"
+    readonly
+    placeholder="Loading prompt..."
+    style="min-height:320px;font-family:'IBM Plex Mono',monospace;"
+  ></textarea>
+
+  <p class="status" style="margin-top:16px;">
+    ACCESS_CODE is optional. Leave it unset while testing. Add it later if you want to restrict access to your deployment.
+  </p>
+</div>
     </div>
   </div>
 
@@ -369,7 +398,23 @@ function runAudit(text, ctaChoice, channel) {
     </div>
   `).join("");
 }
+async function loadPrompt() {
+  try {
+    const response = await fetch("prompt.txt");
+    const text = await response.text();
+    document.getElementById("promptBlock").value = text;
+  } catch (err) {
+    document.getElementById("promptBlock").value =
+      "Unable to load prompt.txt";
+  }
+}
 
+function copyPrompt() {
+  const text = document.getElementById("promptBlock").value;
+  navigator.clipboard.writeText(text);
+}
+
+loadPrompt();
 document.getElementById("go").addEventListener("click", generate);
 </script>
 
