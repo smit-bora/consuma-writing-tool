@@ -120,7 +120,9 @@
       <div class="rule-row"><span class="rule-tag">CTA</span><div class="rule-body"><b>"Book a demo"</b> or <b>"Get in touch"</b><span>— only these two, nothing else.</span></div></div>
     </div>
   </div>
-
+<button onclick="window.location.href='head.html'">
+    Inconsistencies
+</button>
   <div class="generator">
     <div class="card">
       <label>Channel</label>
@@ -272,7 +274,8 @@ async function generate() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-access-code": document.getElementById("accessCode").value.trim()
+        "x-access-code": document.getElementById("accessCode").value.trim(),
+        "x-anthropic-api-key": localStorage.getItem("anthropic_api_key") || ""
       },
       body: JSON.stringify({
         system: buildSystemPrompt(activeChannel),

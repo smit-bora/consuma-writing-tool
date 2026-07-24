@@ -15,10 +15,16 @@ export default async function handler(req, res) {
     }
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: "Server missing ANTHROPIC_API_KEY" });
-  }
+  const apiKey =
+  req.headers["x-anthropic-api-key"] ||
+  process.env.ANTHROPIC_API_KEY;
+
+if (!apiKey) {
+  return res.status(401).json({
+    error:
+      "No Anthropic API key provided. Add one in Settings or configure ANTHROPIC_API_KEY on the server."
+  });
+}
 
   const { system, message } = req.body || {};
   if (!system || !message) {
